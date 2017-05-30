@@ -1,0 +1,9 @@
+setup.py
+genderly/__init__.py
+genderly/prediction.py
+genderly/training.py
+genderly.egg-info/PKG-INFO
+genderly.egg-info/SOURCES.txt
+genderly.egg-info/dependency_links.txt
+genderly.egg-info/not-zip-safe
+genderly.egg-info/top_level.txt
