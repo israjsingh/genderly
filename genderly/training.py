@@ -91,8 +91,8 @@ def _testtrainsplit(rawdata):
     validate_raw = testValidate[~rand_test_num]
     return (train_raw,test_raw)
 
-def _importraw(path) :
-    dataset=pd.read_csv(path+"/Users/rajvardhan/Documents/python notebooks/data/gender/list_NameGender.csv")
+def _importraw() :
+    dataset=pd.read_csv("genderly/data/list_NameGender.csv")
 #   dataset= dataset[dataset.first_name.str.len()>3]
     return(dataset)
 
@@ -142,29 +142,30 @@ def _classifier_training(dataframe):
 #     print rf.oob_score_
     return rf,datatest
 
+def start_training():
+    df=_importraw()
+    df_cleaned=_datacleaning(df)
+    df_features=_genderfeatures(df_cleaned)
+    dummy_features=pd.get_dummies(df_features[['NLast1','NLast2','NLast3']])
+    df_dummy_features=pd.concat([df_cleaned, dummy_features], axis=1)
 
-df=_importraw("")
-df_cleaned=_datacleaning(df)
-df_features=_genderfeatures(df_cleaned)
-dummy_features=pd.get_dummies(df_features[['NLast1','NLast2','NLast3']])
-df_dummy_features=pd.concat([df_cleaned, dummy_features], axis=1)
+    df_dummy_features.ix[df_dummy_features['Gender']=="m","GenderDummy"]=0
+    df_dummy_features.ix[df_dummy_features['Gender']=="f","GenderDummy"]=1
+    df_dummy_features=df_dummy_features.drop(['FirstName','Gender','NLast1','NLast2','NLast3'], axis=1) 
+    df_dummy_features.fillna(0, inplace=True)
 
-df_dummy_features.ix[df_dummy_features['Gender']=="m","GenderDummy"]=0
-df_dummy_features.ix[df_dummy_features['Gender']=="f","GenderDummy"]=1
-df_dummy_features=df_dummy_features.drop(['FirstName','Gender','NLast1','NLast2','NLast3'], axis=1) 
-df_dummy_features.fillna(0, inplace=True)
+    genderPredictionModel,testdata=_classifier_training(df_dummy_features)
 
-genderPredictionModel,testdata=_classifier_training(df_dummy_features)
+    testdata.sort_index(axis=1,inplace=True)
+    y_true=testdata[['GenderDummy']].reset_index(drop=True)
+    X_testdata=testdata.drop('GenderDummy', axis=1).reset_index(drop=True)
 
-testdata.sort_index(axis=1,inplace=True)
-y_true=testdata[['GenderDummy']].reset_index(drop=True)
-X_testdata=testdata.drop('GenderDummy', axis=1).reset_index(drop=True)
+    y_predicted=genderPredictionModel.predict(X_testdata)
 
-y_predicted=genderPredictionModel.predict(X_testdata)
+    y_true=y_true.reset_index(drop=True)
+    #y_predicted_1= [item[0] for item in y_predicted]
+    precision, recall, thresholds = precision_recall_curve(y_true,y_predicted)
+    avg_precision=average_precision_score(y_true,y_predicted)
 
-y_true=y_true.reset_index(drop=True)
-#y_predicted_1= [item[0] for item in y_predicted]
-precision, recall, thresholds = precision_recall_curve(y_true,y_predicted)
-avg_precision=average_precision_score(y_true,y_predicted)
-
-joblib.dump(genderPredictionModel, 'model/genderPredictionModel.pkl') 
+    joblib.dump(genderPredictionModel, 'genderly/model/genderPredictionModel.pkl') 
+    return("training complete")

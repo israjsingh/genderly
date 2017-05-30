@@ -24,7 +24,18 @@ def syllables(word):
 	return count
 
 def feature_engineering(FirstName):
-    
+	if isinstance(FirstName,pd.Series) is True:
+		df=create_features(FirstName)
+		return df
+	elif isinstance(FirstName,list) is True:
+		FirstName=pd.Series(FirstName)
+		df=create_features(FirstName)
+		return df
+	else:
+		return('Expected Dataframe or list')
+
+def create_features(FirstName):
+
 	allowed_NLast1=['a','d','e','g','h','i','j','k','l','m','n','o','p','r','s','t','u','v','y','z','others']
 
 	allowed_NLast2=['aa','ah','ai','aj','ak','al','am','an','ar','as','at','av','ay','ba','da','dh',\
@@ -55,6 +66,7 @@ def feature_engineering(FirstName):
 	all_columns=NLastFeatures+NLast2Features+NLast3Features+other_columns
 	df=pd.DataFrame(columns=all_columns)
 	df.ix[:,'FirstName']=FirstName
+	df.ix[:,'FirstName']=FirstName
 	df['NLast1']=df['FirstName'].str[-1]
 	df['NLast2']=df['FirstName'].str[-2:]
 	df['NLast3']=df['FirstName'].str[-3:]
@@ -74,13 +86,10 @@ def feature_engineering(FirstName):
 	df[['NLast1_'+df['NLast1'].values[0]]] = 1
 	df[['NLast2_'+df['NLast2'].values[0]]] = 1
 	df[['NLast3_'+df['NLast3'].values[0]]] = 1
-	print df
 	return df
 
-
-
 def decide_gender(name):
-    genderPredictionModel = joblib.load('model/genderPredictionModel.pkl')
+    genderPredictionModel = joblib.load('genderly/model/genderPredictionModel.pkl')
     data=feature_engineering(name)
     data.fillna(0,inplace=True)
     data.drop(['FirstName','NLast1','NLast2','NLast3'], axis=1, inplace=True)
@@ -88,6 +97,6 @@ def decide_gender(name):
     data.sort_index(axis=1,inplace=True)
     y_predicted=genderPredictionModel.predict(data)
     y_score=genderPredictionModel.predict_proba(data)
+    print y_predicted,y_score
     return y_predicted,y_score
 
-print decide_gender('raj')
