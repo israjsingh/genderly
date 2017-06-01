@@ -1,3 +1,5 @@
 
 merchant-csv-writer/virtual-env/*
 *.pyc
+dist/*
+

@@ -1,0 +1,4 @@
+include genderly/data/*.csv
+include genderly/data/*.json
+include genderly/model/*.pkl
+include genderly/model/*.npy
