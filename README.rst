@@ -18,6 +18,14 @@ The library comes with a pre trained model which can be used as follows ::
 	import genderly
 	genderly.decide_gender(['raj'])
 
+or ::
+	
+	import genderly
+	genderly.decide_gender(df['first_name'])
+
+Note : It is recommended that the first name being passed to the model is atleat 3 letter long. The model wouldnot work with last names or surnames. It has been trained on ly to work with first names. 
+	
+
 The function *decide_gender()* taked *Pandas Series object* and *lists* as input. 
 
 In case one wants to rerun the training ::
