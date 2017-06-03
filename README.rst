@@ -1,13 +1,23 @@
-:t: Genderly 
+=========
+Genderly 
+=========
 
-:t: Description
+============
+Description
+============
+
 A library to classify an indian name as Male or Female. Mainly focused around making the user onboarding smooth for eCommerce merchants by pre-filling the gender for their users during a signup.
 
-:t: Quick Start
+================
+Quick Start
+================
+
 **Installation** ::
+
 	pip install genderly
 
 **Usage**
+
 The library comes with a pre trained model which can be used as follows ::
 
 	import genderly
@@ -16,6 +26,7 @@ The library comes with a pre trained model which can be used as follows ::
 The function *decide_gender()* taked *Pandas Series object* and *lists* as input. 
 
 In case one wants to rerun the training ::
+
 	import genderly
 	genderly.start_training()
 
